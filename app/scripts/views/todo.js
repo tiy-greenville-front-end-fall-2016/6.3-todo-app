@@ -42,7 +42,8 @@ var TodoItemView = Backbone.View.extend({
   className: 'list-group-item',
   template: todoItemTemplate,
   events: {
-    'click .clickme': 'complete'
+    'click .clickme': 'complete',
+    'click .hideme': 'hide'
   },
   initialize: function(){
     this.listenTo(this.model, 'destroy', this.remove);
@@ -57,14 +58,18 @@ var TodoItemView = Backbone.View.extend({
 
     return this;
   },
-  remove: function(){
-    this.$el.remove();
+  hide: function(){
+    this.model.set('visible', false);
   },
   toggleVisible: function(){
-
+    this.$el.hide();
   },
   complete: function(){
-    console.log('complete');
+    // Hook the confirm modal view's model to this todo model
+    confirmModal.model = this.model;
+
+    // Show the modal
+    confirmModal.show();
   }
 });
 
@@ -82,6 +87,29 @@ var TodoFormView = Backbone.View.extend({
   }
 });
 
+
+var TodoConfirmModal = Backbone.View.extend({
+  el: $('#confirm-delete')[0],
+  events: {
+    "click .btn-primary": 'delete',
+  },
+  hide: function(){
+    this.$el.modal('hide');
+  },
+  show: function(){
+    this.$el.modal('show');
+  },
+  delete: function(){
+    // User confirmed the deletion, so go delete the model!
+    this.model.destroy();
+
+    // Hide the modal
+    this.hide();
+  }
+});
+
+// Confirm Modal Singleton
+var confirmModal = new TodoConfirmModal();
 
 
 module.exports = {

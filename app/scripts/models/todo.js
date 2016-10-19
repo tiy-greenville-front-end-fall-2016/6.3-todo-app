@@ -1,7 +1,10 @@
 var Backbone = require('backbone');
 
 var Todo = Backbone.Model.extend({
-  idAttribute: '_id'
+  idAttribute: '_id',
+  defaults: {
+    visible: true
+  }
 });
 
 var TodoCollection = Backbone.Collection.extend({
